@@ -11,7 +11,7 @@ public record UserPoint(
     }
 
     public UserPoint charge(long point) {
-        if (point <= 0) {
+        if (point < 1) {
             throw new IllegalArgumentException("최소 충전 금액은 1포인트 입니다");
         }
         long maxPoint = 1000L;
@@ -23,7 +23,7 @@ public record UserPoint(
     }
 
     public UserPoint use(long point) {
-        if (point <= 0) {
+        if (point < 1) {
             throw new IllegalArgumentException("최소 사용 금액은 1포인트 입니다");
         }
         long minPoint = 0L;
