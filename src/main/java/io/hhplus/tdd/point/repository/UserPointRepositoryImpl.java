@@ -4,12 +4,12 @@ import io.hhplus.tdd.database.UserPointTable;
 import io.hhplus.tdd.point.UserPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Slf4j
-@Repository
+@Component
 @RequiredArgsConstructor
-public class UserPointRepositoryImpl {
+public class UserPointRepositoryImpl implements UserPointRepository {
+
     private final UserPointTable userPointTable;
 
     public UserPoint selectById(long id) {
