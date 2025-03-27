@@ -3,19 +3,20 @@ package io.hhplus.tdd.point.repository;
 import io.hhplus.tdd.database.UserPointTable;
 import io.hhplus.tdd.point.UserPoint;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Slf4j
-@Repository
+@Component
 @RequiredArgsConstructor
-public class UserPointRepositoryImpl {
+public class UserPointRepositoryImpl implements UserPointRepository {
+
     private final UserPointTable userPointTable;
 
+    @Override
     public UserPoint selectById(long id) {
         return userPointTable.selectById(id);
     }
 
+    @Override
     public UserPoint insertOrUpdate(UserPoint userPoint) {
         return userPointTable.insertOrUpdate(userPoint.id(), userPoint.point());
     }
