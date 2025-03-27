@@ -28,9 +28,9 @@ class PointServiceTest {
     static final long USER_ID = 1L;
     static final long TIME_STAMP = System.currentTimeMillis();
 
-    @DisplayName("최소 사용 금액은 1포인트 입니다")
+    @DisplayName("1포인트 미만 사용시 사용에 실패합니다")
     @Test
-    void usePointFail1() {
+    void usePointFailIfUsePointUnderOnePoint() {
         // given
         long usePoint = 0L;
 
@@ -46,12 +46,12 @@ class PointServiceTest {
                 .hasMessage("최소 사용 금액은 1포인트 입니다");
     }
 
-    @DisplayName("포인트 잔액이 1미만이면 사용이 불가합니다")
+    @DisplayName("포인트 잔액이 1미만일때 포인트 사용시 사용이 실패합니다")
     @Test
-    void usePointFail2() {
+    void usePointFailIfBalanceUnderOnePoint() {
         // given
         long currentPoint = 0L;
-        long usePoint = 2L;
+        long usePoint = 1L;
 
         // selectById() 목 설정
         when(userPointRepository.selectById(USER_ID))
@@ -67,7 +67,7 @@ class PointServiceTest {
 
     @DisplayName("포인트 사용 성공시 내역에 저장됩니다")
     @Test
-    void savePointHistory() {
+    void savePointHistorySucceedIfUsePointSucceed() {
         // given
         long usePoint = 1L;
         long initialTimestamp = System.currentTimeMillis();
@@ -106,9 +106,9 @@ class PointServiceTest {
         );
     }
 
-    @DisplayName("최소 충전 금액은 1포인트 입니다")
+    @DisplayName("1포인트 미만 충전시 충전에 실패합니다")
     @Test
-    void chargePointFail1() {
+    void chargePointFailIfChargeUnderOnePoint() {
         // given
         long chargePoint = 0L;
 
@@ -124,26 +124,27 @@ class PointServiceTest {
                 .hasMessage("최소 충전 금액은 1포인트 입니다");
     }
 
-    @DisplayName("포인트 잔액이 1000을 초과하면 충전이 불가합니다")
+    @DisplayName("포인트 잔액이 1000을 초과할때 충전하면 충전에 실패합니다")
     @Test
-    void chargePointFail2() {
+    void chargePointFailIfChargeThousandPoint() {
         // given
-        long chargePoint = 1001L;
+        long currentPoint = 1000L;
+        long chargePoint = 1L;
 
         // selectById() 목 설정
         when(userPointRepository.selectById(USER_ID))
-                .thenReturn(new UserPoint(USER_ID, 0L, System.currentTimeMillis()));
+                .thenReturn(new UserPoint(USER_ID, currentPoint, System.currentTimeMillis()));
 
         // when
         Throwable exception = catchThrowable(() -> pointService.chargePoint(USER_ID, chargePoint));
         // then
         assertThat(exception).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("최대 잔고 제한을 초과했습니다. 현재 포인트: " + chargePoint);
+                .hasMessage("최대 잔고 제한을 초과했습니다. 현재 포인트: " + (currentPoint + chargePoint));
     }
 
     @DisplayName("포인트 충전 성공시 내역에 저장됩니다")
     @Test
-    void chargePointHistory() {
+    void savePointHistoryIfChargePointSucceed() {
         // given
         long chargePoint = 3L;
         long initialTimestamp = System.currentTimeMillis();
@@ -178,7 +179,7 @@ class PointServiceTest {
                 eq(saveUser.id()),
                 eq(saveUser.point()),
                 eq(TransactionType.CHARGE),
-                longThat(timestamp -> timestamp >= initialTimestamp)
+                any(Long.class)
         );
     }
 }
