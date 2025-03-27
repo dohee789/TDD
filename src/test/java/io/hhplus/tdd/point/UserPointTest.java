@@ -38,6 +38,19 @@ class UserPointTest {
                 .hasMessage("최대 잔고 제한을 초과했습니다. 현재 포인트: " + (userPoint.point() + chargePoint));
     }
 
+    @DisplayName("포인트 충전 성공")
+    @Test
+    void chargePointSucceed() {
+        // given
+        long currentPoint = 1L;
+        long chargePoint = 1L;
+        UserPoint userPoint = new UserPoint(USER_ID, currentPoint, System.currentTimeMillis());
+        // when
+        UserPoint chargedPoint = userPoint.charge(chargePoint);
+        // then
+        assertThat(chargedPoint.point()).isEqualByComparingTo(currentPoint + chargePoint);
+    }
+
     @DisplayName("사용할 포인트가 0미만 경우 IllegalArgumentException 이 발생합니다.")
     @Test
     void usePointException() {
@@ -65,6 +78,19 @@ class UserPointTest {
         assertThat(exception)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("포인트 잔액이 부족합니다. 현재 포인트: " + (userPoint.point() - usePoint));
+    }
+
+    @DisplayName("포인트 사용 성공")
+    @Test
+    void usePointSucceed() {
+        // given
+        long currentPoint = 2L;
+        long usePoint = 1L;
+        UserPoint userPoint = new UserPoint(USER_ID, currentPoint, System.currentTimeMillis());
+        // when
+        UserPoint usedPoint = userPoint.use(usePoint);
+        // then
+        assertThat(usedPoint.point()).isEqualByComparingTo(currentPoint - usePoint);
     }
 
 }
